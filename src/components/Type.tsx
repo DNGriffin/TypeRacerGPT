@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import React from "react";
 
 const sampleSentences = [
     "The shimmer of stardust coated the ancient ruins with an otherworldly glow ",
@@ -12,12 +13,6 @@ const sampleSentences = [
     "When he spoke, the world paused to listen, drawn by the gravity of his words ",
     "Hope grew in the cracks of the concrete, defying every attempt to silence it "
 ];
-
-const getRandomNumber = (prevNumber: number) => {
-    const number = Math.floor(Math.random() * sampleSentences.length);
-    if (number === prevNumber) return getRandomNumber(prevNumber);
-    return number;
-};
 
 type CharItem = {
     character: string;
@@ -41,37 +36,44 @@ function generateChars(assignment: string, input: string): CharItem[] {
     }
     return charItems;
 }
+function computeCompletion(sentencesLength: number, sentenceIndex: number, assignmentPercentage: number) {
+    const sentencePercentage = sentenceIndex / sentencesLength;
+    const weightedAssignmentPercentage = (1 / sentencesLength) * assignmentPercentage
+    return Math.round(100 * (sentencePercentage + weightedAssignmentPercentage));
+
+}
+
 
 export const Type = () => {
     const [input, setInput] = useState("");
     const [index, setIndex] = useState(0);
     const [assignment, setAssignment] = useState(sampleSentences[index]);
+    const [sentences, setSentences] = useState(sampleSentences);
+    const [percentage, setPercentage] = useState(0);
     const [charItems, setCharItems] = useState<CharItem[]>([]);
-    const [assignmentPercentage, setAssignmentPercentage] = useState(0);
     // const [roundPercentage, setRoundPercentage] = useState(0);
 
 
     useEffect(() => {
         setCharItems(generateChars(assignment, input));
-        // If user has typed past or exactly the length of the assignment, load a new sentence
+        setPercentage(computeCompletion(sentences.length, index, input.length / assignment.length))
+        if (index >= sentences.length) {
+            alert("COMPLETE!")
+            return;
+        }
         if (input.length >= assignment.length) {
-            const newIndex = getRandomNumber(index);
+            const newIndex = index + 1;
             setIndex(newIndex);
-            setAssignment(sampleSentences[newIndex]);
+            setAssignment(sentences[newIndex]);
             setInput("");
-            setAssignmentPercentage(Math.round(100 * input.length / assignment.length));
         }
     }, [input, assignment, index]);
 
-    // The index of the character that should be typed next
     const cursorIndex = input.length;
 
     return (
         <div>
-            {/* 
-        The style block with our blinking CSS class. 
-        You could also put this in an external CSS file.
-      */}
+
             <style jsx>{`
         @keyframes blink {
           0% {
@@ -115,8 +117,48 @@ export const Type = () => {
                 id="input"
                 name="input"
             />
+            <br />
+            <br />
 
-            <div style={{ width: "100%", height: 200, background: "red" }} id="loading-bar"></div>
+            <ProgressBar percent={percentage}></ProgressBar>
+        </div>
+    );
+};
+
+
+interface ProgressBarProps {
+    /** 0–100 */
+    percent: number;
+}
+
+export const ProgressBar: React.FC<ProgressBarProps> = ({ percent }) => {
+    const validPercent = Math.max(0, Math.min(100, percent));
+
+    return (
+        <div style={{ display: "inline-block", width: "50%" }}>
+            <div
+                style={{
+                    width: "100%",
+                    height: 20,
+                    backgroundColor: "#e0e0de",
+                    borderRadius: 10,
+                    overflow: "hidden",
+                    boxShadow: "inset 0 2px 5px rgba(0,0,0,0.2)"
+                }}
+            >
+                <div
+                    style={{
+                        width: `${validPercent}%`,
+                        height: "100%",
+                        background: "linear-gradient(90deg, #A1FFCE 0%, #FAFFD1 100%)",
+                        transition: "width 0.2s ease-in-out"
+                    }}
+                />
+            </div>
+
+            <div style={{ textAlign: "center", marginTop: 8, fontWeight: 600 }}>
+                {validPercent}%
+            </div>
         </div>
     );
 };
