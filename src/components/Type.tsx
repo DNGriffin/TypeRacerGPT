@@ -1,18 +1,7 @@
 import { useEffect, useState } from "react";
 import React from "react";
 
-const sampleSentences = [
-    "The shimmer of stardust coated the ancient ruins with an otherworldly glow ",
-    "Serendipity led her to an abandoned bookstore where every page whispered secrets ",
-    "A gentle breeze carried the echoes of forgotten lullabies across the silent meadow ",
-    "Sunset painted the skyline with liquid gold, a fleeting masterpiece of light and time ",
-    "His laughter crackled like distant thunder on a summer night ",
-    "Whispers of revolution stirred in the shadowy corners of the cobblestone alley ",
-    "She folded her wishes into paper cranes, sending them adrift in a moonlit stream ",
-    "The city never slept, but it still dreamed in neon rainbows and midnight jazz ",
-    "When he spoke, the world paused to listen, drawn by the gravity of his words ",
-    "Hope grew in the cracks of the concrete, defying every attempt to silence it "
-];
+
 
 type CharItem = {
     character: string;
@@ -44,23 +33,23 @@ function computeCompletion(sentencesLength: number, sentenceIndex: number, assig
 }
 
 
-export const Type = () => {
+export const Type: React.FC<{ sentences: string[] }> = ({ sentences }) => {
     const [input, setInput] = useState("");
     const [index, setIndex] = useState(0);
-    const [assignment, setAssignment] = useState(sampleSentences[index]);
-    const [sentences, setSentences] = useState(sampleSentences);
+    const [assignment, setAssignment] = useState(sentences[0]);
     const [percentage, setPercentage] = useState(0);
     const [charItems, setCharItems] = useState<CharItem[]>([]);
     // const [roundPercentage, setRoundPercentage] = useState(0);
 
 
     useEffect(() => {
-        setCharItems(generateChars(assignment, input));
-        setPercentage(computeCompletion(sentences.length, index, input.length / assignment.length))
         if (index >= sentences.length) {
             alert("COMPLETE!")
             return;
         }
+        setCharItems(generateChars(assignment, input));
+        setPercentage(computeCompletion(sentences.length, index, input.length / assignment.length))
+
         if (input.length >= assignment.length) {
             const newIndex = index + 1;
             setIndex(newIndex);
