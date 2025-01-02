@@ -63,22 +63,26 @@ export const Type: React.FC<{ sentences: string[] }> = ({ sentences }) => {
     return (
         <div>
 
-            <style jsx>{`
-        @keyframes blink {
-          0% {
-            background-color: rgba(247, 255, 0, 0.27);
-          }
-          50% {
-            background-color: transparent;
-          }
-          100% {
-            background-color: rgba(247, 255, 0, 0.27);
-          }
+            <style
+                dangerouslySetInnerHTML={{
+                    __html: `
+      @keyframes blink {
+        0% {
+          background-color: rgba(247, 255, 0, 0.27);
         }
-        .cursor {
-          animation: blink 800ms step-start infinite;
+        50% {
+          background-color: transparent;
         }
-      `}</style>
+        100% {
+          background-color: rgba(247, 255, 0, 0.27);
+        }
+      }
+      .cursor {
+        animation: blink 800ms step-start infinite;
+      }
+    `,
+                }}
+            />
 
             {charItems.map((charItem, i) => {
                 const isCursor = i === cursorIndex;
