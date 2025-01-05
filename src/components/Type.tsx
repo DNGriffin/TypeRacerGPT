@@ -31,6 +31,21 @@ function computeCompletion(sentencesLength: number, sentenceIndex: number, assig
     return Math.round(100 * (sentencePercentage + weightedAssignmentPercentage));
 
 }
+function countWords(sentences: string[]) {
+    let numWords = 0;
+    sentences.forEach(sentence => {
+        numWords += sentence.split(" ").length
+    })
+    return numWords;
+}
+
+function calculateWPM(numWords: number, durationMS: number) {
+    const durationInMins = durationMS / 60000;
+
+    // w/m
+    const wpm = numWords / durationInMins
+    return Math.round(wpm);
+}
 
 
 export const Type: React.FC<{ sentences: string[] }> = ({ sentences }) => {
@@ -39,12 +54,16 @@ export const Type: React.FC<{ sentences: string[] }> = ({ sentences }) => {
     const [assignment, setAssignment] = useState(sentences[0]);
     const [percentage, setPercentage] = useState(0);
     const [charItems, setCharItems] = useState<CharItem[]>([]);
-    // const [roundPercentage, setRoundPercentage] = useState(0);
+    const [startTime] = useState(new Date());
 
 
     useEffect(() => {
         if (index >= sentences.length) {
-            alert("COMPLETE!")
+            const durationMS = new Date().getTime() - startTime.getTime()
+            const numberOfWords = countWords(sentences);
+            const wpm = calculateWPM(numberOfWords, durationMS)
+            alert(`Completed in ${durationMS / 1000} seconds, ${wpm}WPM!`)
+            window.location.reload()
             return;
         }
         setCharItems(generateChars(assignment, input));

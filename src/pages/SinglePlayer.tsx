@@ -5,9 +5,11 @@ import { mockStories } from "../mock/mock-data";
 export const SinglePlayer: React.FC = () => {
 
     let { storyId } = useParams();
+    const story = mockStories[parseInt(storyId ?? "0")]
+
 
     return <div>
-        Single Player for story={storyId}
-        <Type sentences={mockStories[parseInt(storyId ?? "0")].sentences} />
+        <h1>{story.title}</h1>
+        <Type sentences={story.sentences} />
     </div>
 }
